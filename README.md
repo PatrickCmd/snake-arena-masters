@@ -50,6 +50,18 @@ npm run dev
 - Click on "New codespace" to launch a new Codespace environment.
 - Edit files directly within the Codespace and commit and push your changes once you're done.
 
+## How can I run tests?
+
+You can run the tests using the following commands:
+
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests once
+npm test -- run
+```
+
 ## What technologies are used for this project?
 
 This project is built with:
