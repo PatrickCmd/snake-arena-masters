@@ -1,0 +1,27 @@
+{
+  "name": "snake-arena-masters",
+  "version": "1.0.0",
+  "description": "A modern, multiplayer snake game with real-time leaderboards, spectator mode, and competitive gameplay. Built with React + TypeScript frontend and FastAPI backend.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && make run",
+    "dev:frontend": "cd frontend && npm run dev",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && make install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PatrickCmd/snake-arena-masters.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PatrickCmd/snake-arena-masters/issues"
+  },
+  "homepage": "https://github.com/PatrickCmd/snake-arena-masters#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

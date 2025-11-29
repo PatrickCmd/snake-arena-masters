@@ -34,18 +34,34 @@ snake-arena-masters/
 - **Frontend**: Node.js 18+ and npm
 - **Backend**: Python 3.12+ and [uv](https://github.com/astral-sh/uv)
 
-### Frontend Setup
+### Quick Start
 
+1. **Install All Dependencies**:
+   ```bash
+   npm run install:all
+   ```
+
+2. **Run Everything**:
+   ```bash
+   npm run dev
+   ```
+   - Frontend: `http://localhost:5173`
+   - Backend: `http://localhost:8000`
+
+   > 📖 [Learn more about how we use concurrently](docs/concurrent_execution.md)
+
+### Manual Setup
+
+If you prefer to run them separately:
+
+**Frontend**:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-The frontend will be available at `http://localhost:5173`
-
-### Backend Setup
-
+**Backend**:
 ```bash
 cd backend
 make install    # Install dependencies

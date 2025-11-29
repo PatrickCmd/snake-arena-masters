@@ -45,3 +45,8 @@ export interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
 }
+
+export interface Token {
+  access_token: string;
+  token_type: string;
+}
