@@ -1,6 +1,6 @@
 # Backend Makefile
 
-.PHONY: help install run test test-cov clean setup lint format format-check seed-info
+.PHONY: help install run test test-cov clean setup lint format format-check seed-info verify-api
 
 # Default target - show help
 help:
@@ -15,6 +15,7 @@ help:
 	@echo "  make format        - Format code (ruff format)"
 	@echo "  make format-check  - Check formatting without changes"
 	@echo "  make seed-info     - Display mock database info"
+	@echo "  make verify-api    - Verify API endpoints (requires running server)"
 	@echo "  make clean         - Clean build artifacts"
 	@echo "  make setup         - Full setup (install + check)"
 
@@ -61,3 +62,7 @@ format-check:
 # Display mock database information
 seed-info:
 	uv run python scripts/seed_info.py
+
+# Verify API endpoints (requires running server)
+verify-api:
+	uv run python scripts/verify_api.py
