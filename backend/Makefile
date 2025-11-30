@@ -1,6 +1,6 @@
 # Backend Makefile
 
-.PHONY: help install run test test-cov clean setup lint format format-check seed-info verify-api db-migrate db-seed db-reset
+.PHONY: help install run test test-cov test-integration test-all clean setup lint format format-check seed-info verify-api db-migrate db-seed db-reset
 
 # Default target - show help
 help:
@@ -9,8 +9,10 @@ help:
 	@echo "Available commands:"
 	@echo "  make install       - Install dependencies"
 	@echo "  make run           - Run development server"
-	@echo "  make test          - Run tests"
+	@echo "  make test          - Run unit tests"
 	@echo "  make test-cov      - Run tests with coverage"
+	@echo "  make test-integration - Run integration tests"
+	@echo "  make test-all      - Run all tests (unit + integration)"
 	@echo "  make lint          - Run linting (ruff check)"
 	@echo "  make format        - Format code (ruff format)"
 	@echo "  make format-check  - Check formatting without changes"
@@ -37,6 +39,14 @@ test:
 # Run tests with coverage
 test-cov:
 	uv run pytest --cov=app tests/
+
+# Run integration tests
+test-integration:
+	uv run pytest tests_integration/ -v
+
+# Run all tests (unit + integration)
+test-all:
+	uv run pytest tests/ tests_integration/ -v
 
 # Clean up build artifacts and cache
 clean:
