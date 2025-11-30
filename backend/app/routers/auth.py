@@ -4,27 +4,26 @@ Authentication router for user login, signup, and session management.
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.schemas import (
-    AuthResponse,
-    SignupRequest,
-    Token,
-    User,
-)
-from app.services.auth_service import auth_service
+from app.models.schemas import AuthResponse, SignupRequest, Token, User
+from app.services import auth_service
+from app.services.db_session import get_db
 from app.utils.security import create_access_token, get_current_user_id
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
 
 @router.post("/login", response_model=Token)
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+async def login(
+    form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
+):
     """
     User login endpoint.
 
     Authenticate with email and password to receive a JWT token.
     """
-    user = auth_service.authenticate_user(form_data.username, form_data.password)
+    user = await auth_service.authenticate_user(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -37,15 +36,15 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.post("/signup", response_model=AuthResponse, status_code=status.HTTP_201_CREATED)
-async def signup(request: SignupRequest):
+async def signup(request: SignupRequest, db: AsyncSession = Depends(get_db)):
     """
     User registration endpoint.
 
     Create a new user account.
     """
     try:
-        user = auth_service.create_user(
-            email=request.email, username=request.username, password=request.password
+        user = await auth_service.create_user(
+            db, email=request.email, username=request.username, password=request.password
         )
         return AuthResponse(success=True, user=user)
     except ValueError as e:
@@ -65,11 +64,13 @@ async def logout(current_user_id: str = Depends(get_current_user_id)):
 
 
 @router.get("/me", response_model=User)
-async def get_current_user(current_user_id: str = Depends(get_current_user_id)):
+async def get_current_user(
+    current_user_id: str = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)
+):
     """
     Get current authenticated user information.
     """
-    user = auth_service.get_user_by_id(current_user_id)
+    user = await auth_service.get_user_by_id(db, current_user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user

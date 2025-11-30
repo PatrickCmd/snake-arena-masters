@@ -1,6 +1,6 @@
 # Backend Makefile
 
-.PHONY: help install run test test-cov clean setup lint format format-check seed-info verify-api
+.PHONY: help install run test test-cov clean setup lint format format-check seed-info verify-api db-migrate db-seed db-reset
 
 # Default target - show help
 help:
@@ -16,6 +16,9 @@ help:
 	@echo "  make format-check  - Check formatting without changes"
 	@echo "  make seed-info     - Display mock database info"
 	@echo "  make verify-api    - Verify API endpoints (requires running server)"
+	@echo "  make db-migrate    - Run database migrations"
+	@echo "  make db-seed       - Seed database with demo data"
+	@echo "  make db-reset      - Reset database (drop and recreate)"
 	@echo "  make clean         - Clean build artifacts"
 	@echo "  make setup         - Full setup (install + check)"
 
@@ -66,3 +69,15 @@ seed-info:
 # Verify API endpoints (requires running server)
 verify-api:
 	uv run python scripts/verify_api.py
+
+# Database commands
+db-migrate:
+	uv run alembic upgrade head
+
+db-seed:
+	uv run python scripts/seed_db.py
+
+db-reset:
+	rm -f snake_arena.db
+	uv run alembic upgrade head
+	uv run python scripts/seed_db.py

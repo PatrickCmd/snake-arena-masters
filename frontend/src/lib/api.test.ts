@@ -177,6 +177,33 @@ describe('Leaderboard API', () => {
       expect(result.error).toBe('Error');
     });
   });
+
+  describe('getBestScore', () => {
+    it('should fetch best score successfully', async () => {
+      (apiClient.get as Mock).mockResolvedValue(500);
+
+      const result = await api.leaderboard.getBestScore('walls');
+
+      expect(apiClient.get).toHaveBeenCalledWith('/leaderboard/best-score/walls');
+      expect(result).toBe(500);
+    });
+
+    it('should return null when no best score exists', async () => {
+      (apiClient.get as Mock).mockResolvedValue(null);
+
+      const result = await api.leaderboard.getBestScore('pass-through');
+
+      expect(result).toBeNull();
+    });
+
+    it('should return null on error', async () => {
+      (apiClient.get as Mock).mockRejectedValue(new Error('Unauthorized'));
+
+      const result = await api.leaderboard.getBestScore('walls');
+
+      expect(result).toBeNull();
+    });
+  });
 });
 
 describe('Spectate API', () => {

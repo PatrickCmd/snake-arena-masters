@@ -2,37 +2,62 @@
 Authentication service for user management and authentication.
 """
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.models.schemas import User
-from app.services.database import db
+from app.services import user_service
 from app.utils.security import get_password_hash, verify_password
 
 
-class AuthService:
-    """Service for authentication operations."""
+async def authenticate_user(db: AsyncSession, email: str, password: str) -> User | None:
+    """
+    Authenticate a user with email and password.
 
-    @staticmethod
-    def authenticate_user(email: str, password: str) -> User | None:
-        """Authenticate a user with email and password."""
-        result = db.get_user_by_email(email)
-        if not result:
-            return None
+    Args:
+        db: Database session
+        email: User email
+        password: Plain text password
 
-        user, password_hash = result
-        if not verify_password(password, password_hash):
-            return None
+    Returns:
+        User if authenticated, None otherwise
+    """
+    result = await user_service.get_user_by_email(db, email)
+    if not result:
+        return None
 
-        return user
+    user, password_hash = result
+    if not verify_password(password, password_hash):
+        return None
 
-    @staticmethod
-    def create_user(email: str, username: str, password: str) -> User:
-        """Create a new user."""
-        password_hash = get_password_hash(password)
-        return db.create_user(email, username, password_hash)
-
-    @staticmethod
-    def get_user_by_id(user_id: str) -> User | None:
-        """Get a user by ID."""
-        return db.get_user_by_id(user_id)
+    return user
 
 
-auth_service = AuthService()
+async def create_user(db: AsyncSession, email: str, username: str, password: str) -> User:
+    """
+    Create a new user.
+
+    Args:
+        db: Database session
+        email: User email
+        username: Username
+        password: Plain text password
+
+    Returns:
+        Created user
+    """
+    password_hash = get_password_hash(password)
+    return await user_service.create_user(db, email, username, password_hash)
+
+
+async def get_user_by_id(db: AsyncSession, user_id: str) -> User | None:
+    """
+    Get a user by ID.
+
+    Args:
+        db: Database session
+        user_id: User ID
+
+    Returns:
+        User or None if not found
+    """
+    return await user_service.get_user_by_id(db, user_id)

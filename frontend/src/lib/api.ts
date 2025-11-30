@@ -107,6 +107,16 @@ export const api = {
         return { success: false, error: apiError.message };
       }
     },
+
+    getBestScore: async (mode: GameMode): Promise<number | null> => {
+      try {
+        const score = await apiClient.get<number | null>(`/leaderboard/best-score/${mode}`);
+        return score;
+      } catch (error) {
+        console.error('Failed to fetch best score:', error);
+        return null;
+      }
+    },
   },
 
   spectate: {

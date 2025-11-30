@@ -24,6 +24,10 @@ class Settings(BaseSettings):
         "http://localhost:8080",
     ]
 
+    # Database
+    database_url: str = "sqlite+aiosqlite:///./snake_arena.db"
+    # For production, use: postgresql+asyncpg://user:password@localhost/dbname
+
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 
