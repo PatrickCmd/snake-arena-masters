@@ -35,7 +35,6 @@ services:
     name: snake-arena-frontend
     runtime: static
     plan: free
-    region: oregon
     rootDir: frontend
     buildCommand: chmod +x ./render-build.sh && ./render-build.sh
     staticPublishPath: ./dist
