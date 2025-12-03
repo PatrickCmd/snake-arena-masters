@@ -24,6 +24,7 @@ class Settings(BaseSettings):
         "http://localhost:8080",
         "http://localhost",  # Docker frontend
         "http://frontend",  # Docker service name
+        "https://*.onrender.com",  # Render deployments
     ]
 
     # Database
