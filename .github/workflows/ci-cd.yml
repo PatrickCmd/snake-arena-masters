@@ -93,7 +93,7 @@ jobs:
       - name: Run integration tests
         run: uv run pytest tests_integration/ -v --tb=short
         env:
-          DATABASE_URL: sqlite+aiosqlite:///:memory:
+          DATABASE_URL: "sqlite+aiosqlite:///:memory:"
 
   # Deploy to Render
   deploy:
