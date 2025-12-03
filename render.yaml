@@ -1,18 +1,18 @@
-services:
-  # PostgreSQL Database
-  - type: pserv
-    name: snake-arena-db
-    plan: free
+databases:
+  - name: snake-arena-db
     databaseName: snake_arena
     user: snake_arena_user
+    plan: free
     region: oregon
 
+services:
   # FastAPI Backend
   - type: web
     name: snake-arena-backend
     runtime: python
     plan: free
     region: oregon
+    rootDir: backend
     buildCommand: chmod +x ./render-build.sh && ./render-build.sh
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
@@ -29,7 +29,6 @@ services:
         value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 30
-      - fromGroup: snake-arena-backend-env
 
   # React Frontend Static Site
   - type: web
@@ -37,6 +36,7 @@ services:
     runtime: static
     plan: free
     region: oregon
+    rootDir: frontend
     buildCommand: chmod +x ./render-build.sh && ./render-build.sh
     staticPublishPath: ./dist
     headers:
