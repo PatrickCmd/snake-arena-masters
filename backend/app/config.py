@@ -22,6 +22,8 @@ class Settings(BaseSettings):
         "http://localhost:3000",
         "http://localhost:5173",
         "http://localhost:8080",
+        "http://localhost",  # Docker frontend
+        "http://frontend",  # Docker service name
     ]
 
     # Database

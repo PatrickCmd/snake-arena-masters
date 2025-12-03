@@ -1,0 +1,19 @@
+# Environment variables
+.env
+
+# Docker
+docker-compose.override.yml
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+
+# Documentation (keep in image)
+# README.md
