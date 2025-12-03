@@ -1,0 +1,121 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '20'
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  # Frontend Tests
+  frontend-tests:
+    name: Frontend Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Build check
+        run: npm run build
+
+  # Backend Unit Tests
+  backend-unit-tests:
+    name: Backend Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run unit tests
+        run: uv run pytest tests/ -v --tb=short
+
+  # Backend Integration Tests
+  backend-integration-tests:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    needs: [backend-unit-tests]
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run integration tests
+        run: uv run pytest tests_integration/ -v --tb=short
+        env:
+          DATABASE_URL: sqlite+aiosqlite:///:memory:
+
+  # Deploy to Render
+  deploy:
+    name: Deploy to Render
+    runs-on: ubuntu-latest
+    needs: [frontend-tests, backend-unit-tests, backend-integration-tests]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Deploy Backend to Render
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_BACKEND }}"
+          echo "✅ Backend deployment triggered"
+
+      - name: Deploy Frontend to Render
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK_FRONTEND }}"
+          echo "✅ Frontend deployment triggered"
+
+      - name: Deployment Summary
+        run: |
+          echo "🚀 Deployment initiated!"
+          echo "📊 Backend: https://snake-arena-backend.onrender.com"
+          echo "🎮 Frontend: https://snake-arena-frontend.onrender.com"
+          echo "⏳ Deployments typically complete in 3-5 minutes"
