@@ -21,7 +21,11 @@ from app.config import settings
 from app.models.db import Base
 
 # Set the database URL from our settings
-config.set_main_option("sqlalchemy.url", settings.database_url)
+# Ensure we use asyncpg driver for async operations
+database_url = settings.database_url
+if database_url.startswith("postgresql://"):
+    database_url = database_url.replace("postgresql://", "postgresql+asyncpg://", 1)
+config.set_main_option("sqlalchemy.url", database_url)
 
 # add your model's MetaData object here
 # for 'autogenerate' support
