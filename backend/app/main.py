@@ -34,6 +34,18 @@ app.include_router(leaderboard.router, prefix=settings.api_v1_prefix)
 app.include_router(spectate.router, prefix=settings.api_v1_prefix)
 
 
+@app.on_event("startup")
+async def startup_event():
+    """Log startup information."""
+    import os
+    print("=" * 50)
+    print("🚀 Snake Arena Masters API Starting...")
+    print(f"📊 Database URL: {settings.database_url[:50]}...")
+    print(f"🌐 CORS Origins: {settings.cors_origins}")
+    print(f"🔧 Port: {os.getenv('PORT', '8000')}")
+    print("=" * 50)
+
+
 @app.get("/")
 async def root():
     """Root endpoint."""
